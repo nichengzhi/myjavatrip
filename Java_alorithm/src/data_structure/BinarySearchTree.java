@@ -107,7 +107,7 @@ public class BinarySearchTree<T extends Comparable> {
 		}
 	}
 	//insert a item always from the root
-	public void insert(BN<T> currnode,T item) {
+	public void insert_recursive(BN<T> currnode,T item) {
 		if(currnode == null) {
 			currnode = new BN<>();
 			currnode.item = item;
@@ -117,10 +117,10 @@ public class BinarySearchTree<T extends Comparable> {
 		else {
 			int compare_result = item.compareTo(currnode.item);
 			if(compare_result >0) {
-				insert(currnode.right,item);
+				insert_recursive(currnode.right,item);
 			}
 			else if(compare_result < 0) {
-				insert(currnode.left,item);
+				insert_recursive(currnode.left,item);
 			}
 			else {
 				currnode.freq ++;
@@ -128,25 +128,117 @@ public class BinarySearchTree<T extends Comparable> {
 		}
 		
 	}
+	//non_recursive insert
+	public void insert(T t) {
+		
+		BN<T> new_node = new BN<>();
+		new_node.item = t;
+		if(root == null) {
+			root = new_node;
+			root.parent = null;
+			root.left = null;
+			root.right = null;
+		}
+		else {
+			BN<T> cursor = root;
+			BN<T> lastvisit = null;
+			while(cursor != null) {
+				lastvisit = cursor;
+				if(cursor.item.compareTo(t) > 0) {
+					cursor = cursor.left;
+				}
+				else if(cursor.item.compareTo(t) < 0) {
+					cursor = cursor.right;
+				}
+				else {
+					cursor.freq ++;
+				}
+			}
+			new_node.parent = lastvisit;
+			if(lastvisit.item.compareTo(t) > 0)
+				lastvisit.left = new_node;
+			else if(lastvisit.item.compareTo(t) < 0)
+				lastvisit.right = new_node;
+		}
+		
+	}
 	//search
 	
-	public boolean search(T item) {
+	public BN<T> recursive_search(T item) {
 		if(root == null) {
-			return false;
+			return null;
 		}
-		return search(root,item);
+		return recursive_search(root,item);
 	}
-	public boolean search(BN<T> currnode,T item) {
+	public BN<T> recursive_search(BN<T> currnode,T item) {
 		int compare_result = item.compareTo(currnode.item);
 		if(compare_result >0) {
-			search(currnode.right,item);
+			recursive_search(currnode.right,item);
 		}
 		else if(compare_result < 0) {
-			search(currnode.left,item);
+			recursive_search(currnode.left,item);
 		}
-		return true;//不能加else，程序会觉得输出不了boolean
+		//不能加else，程序会觉得输出不了boolean
+		return currnode;
+	}
+	public BN<T> search(T t){
+		if(root == null) {
+			return null;
+		}
+	
+		BN<T> cursor = root;
+		while(cursor != null) {
+			if(cursor.item.compareTo(t) > 0)
+				cursor = cursor.left;
+			else if(cursor.item.compareTo(t) < 0)
+				cursor = cursor.right;
+			else {
+				return cursor;
+			}
+				
+		}
+		return cursor;
 		
 	}
 	//delete
+	//BN<T> wait_delete = search(t);
+	public void delete(BN<T> wait_delete) {
+		
+		if(wait_delete == null)
+			return;
+		if(wait_delete == root) {
+			root = null;
+			return;
+		}
+		if(wait_delete.left == null && wait_delete.right == null) {
+			if(wait_delete.parent.item.compareTo(wait_delete.item) > 0)
+				wait_delete.parent.left = null;
+			else {
+				wait_delete.parent.right = null;
+			}
+		}
+		else if(wait_delete.left == null || wait_delete.right == null) {
+			if(wait_delete.left == null) {
+				wait_delete.item = wait_delete.right.item;
+				wait_delete.right = null;
+			}
+			else {
+				wait_delete.item = wait_delete.left.item;
+				wait_delete.left = null;
+			}
+		}
+		//use the smallest item in right node exchange value
+		else {
+			BN<T> cursor = wait_delete.right;
+			BN<T> min_node = null;
+			while(cursor != null) {
+				min_node = cursor;
+				cursor = cursor.left;
+			}
+			wait_delete.item = min_node.item;
+			delete(min_node);
+		}
+			
+	}
 	
 }
