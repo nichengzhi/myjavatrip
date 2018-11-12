@@ -2,7 +2,7 @@ package data_structure;
 
 public class BinarySearchTree<T extends Comparable> {
 	BN<T> root;
-	class BN<T>{
+	private static class BN<T extends Object>{
 		T item;
 		BN<T> left;
 		BN<T> right;	
@@ -239,6 +239,23 @@ public class BinarySearchTree<T extends Comparable> {
 			delete(min_node);
 		}
 			
+	}
+	public static void post2(BN<Integer> node) {
+		if(node != null) {
+			
+			post2(node.left);
+			
+			post2(node.right);
+			System.out.print(node.item);
+		}
+	}
+	public static void main(String[] args) {
+		Integer[] test = {4,3,2,6,7,8};
+		BinarySearchTree<Integer> bst = new BinarySearchTree<>();
+		for(Integer i: test) {
+			bst.insert(i);
+		}
+		post2(bst.root);
 	}
 	
 }
