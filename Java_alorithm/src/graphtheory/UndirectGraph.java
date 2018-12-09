@@ -1,13 +1,17 @@
 package graphtheory;
+import java.util.*;
 
 public class UndirectGraph {
 	int vsize;
 	int esize;//number of vertex and edge
 	Vertex[] vertexlist;
+	HashMap<Character, Vertex> vertexmap;
+	HashMap<Vertex, Integer> vertexindexmap;
 	//vertex class
-	private class Vertex{
+	private static class Vertex{
 		char vertex;
 		EdgeNode firstedge;
+		boolean isvisted;
 	}
 	//edge node
 	private class EdgeNode{
@@ -44,7 +48,19 @@ public class UndirectGraph {
 			edgenode2.next = vertexlist[pos2].firstedge;
 			vertexlist[pos2].firstedge = edgenode2;
 		}
+		//System.out.println(vsize);
+		//System.out.println(vertexlist.length);
+		vertexmap = new HashMap<>();
+		vertexindexmap = new HashMap<>();
+		int i = 0;
+		for(Vertex ve: vertexlist) {
+			vertexindexmap.put(ve, i++);
+			vertexmap.put(ve.vertex, ve);
+		}
+		
 	}
+	
+	
 	private int searchvertex(char ch) {
 		for(int i = 0; i < vsize; i ++) {
 			if(vertexlist[i].vertex == ch) {
@@ -54,6 +70,28 @@ public class UndirectGraph {
 		}
 		return -1;
 	}
+	//depth first search
+	//generate a hashmap for value -> index
+	public void dfs(char c) {
+		boolean[] marked = new boolean[vsize];
+		Vertex v = vertexmap.get(c);
+		dfs(v, marked);
+	}
+	public void dfs(Vertex v, boolean[] marked) {
+		marked[vertexindexmap.get(v)] = true;
+		System.out.println(v.vertex);
+		EdgeNode cursor = v.firstedge;
+		while(cursor != null) {
+			char tempc = cursor.adjvex;
+			Vertex tempv = vertexmap.get(tempc);
+			if(!marked[vertexindexmap.get(tempv)]) {
+				dfs(tempv, marked);
+			}
+			cursor = cursor.next;
+		}
+	}
+	
+	
 	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
@@ -89,7 +127,9 @@ public class UndirectGraph {
             }
         };
         UndirectGraph udg = new UndirectGraph(vexs, edges);
+        
         System.out.println(udg);
+        udg.dfs('A');
 	}
 
 }
